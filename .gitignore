@@ -1,0 +1,40 @@
+# Compiled binaries
+yp
+yp-*
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage
+coverage
+*.lcov
+.nyc_output
+
+# Dependency directories
+node_modules/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# dotenv environment variable files
+.env
+.env.*.local
+
+# Build output
+dist
+out
+
+# Search index cache (rebuilt on the fly)
+.yellowpages/.search-index.json
+.yellowpages/.search-hash
+
+# Bun
+bun.lockb
