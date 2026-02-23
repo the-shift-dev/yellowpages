@@ -353,7 +353,7 @@ yp service add \
 │  services/                                          │
 │    EvoFg8sF.json    ← checkout-api                  │
 │    zSLMBKV6.json    ← payment-processor             │
-│    k9Xm2wP1.json    ← auth-service                 │
+│    k9Xm2wP1.json    ← auth-service                  │
 │  systems/                                           │
 │    8RW4htFP.json    ← payments                      │
 │  owners/                                            │
