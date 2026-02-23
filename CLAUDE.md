@@ -19,7 +19,7 @@ yellowpages is a service catalog CLI for AI coding agents. It tracks services, s
 ### Layers
 
 1. **CLI entry** (`src/main.ts`) — Commander-based routing. Global flags (`--json`, `--quiet`) propagated via `optsWithGlobals()`.
-2. **Commands** (`src/commands/`) — Each entity (service, system, owner) is a Commander subcommand with add/list/show/rm actions. Standalone commands: `init`, `onboard`, `lint`, `search`, `deps`.
+2. **Commands** (`src/commands/`) — Each entity (service, system, owner) is a Commander subcommand with add/list/show/rm actions. Standalone commands: `init`, `onboard`, `lint`, `search`, `deps`, `discover`.
 3. **Relations** (`src/relations.ts`) — Shared module for cross-referencing entities. `resolveService()`, `resolveSystem()`, `resolveOwner()`, `filterServices()`. All relation stitching (e.g., "what depends on me?") happens here at query time — no background processing.
 4. **Deps** (`src/deps.ts`) — Dependency graph traversal. `walkUp()` (dependents), `walkDown()` (dependencies), `findOrphans()`. Cycle-safe via ancestor tracking.
 5. **Search** (`src/search-index.ts`) — MiniSearch-based full-text search with disk caching. Auto-rebuilds when catalog files change (hash-based invalidation).

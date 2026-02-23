@@ -329,40 +329,40 @@ yp service add \
 ## How It Works
 
 ```
-┌──────────────────────────────────────────────────┐
-│  Agent                                           │
-│                                                  │
-│  "I need to modify the checkout flow"            │
-│  > yp service show checkout-api --json     │
-│                                                  │
-│  → Owner: platform-team                          │
-│  → System: payments                              │
-│  → Depends on: payment-processor, auth-service   │
-│  → API: Checkout REST API (rest)                 │
-│  → Lifecycle: production                         │
-│                                                  │
-│  "OK, this is production, owned by platform,     │
-│   and payment-processor depends on it.           │
-│   I'll be careful."                              │
-└──────────────────────────────────────────────────┘
-                       │
-                       ▼
-┌──────────────────────────────────────────────────┐
+┌─────────────────────────────────────────────────────┐
+│  Agent                                              │
+│                                                     │
+│  "I need to modify the checkout flow"               │
+│  > yp service show checkout-api --json              │
+│                                                     │
+│  → Owner: platform-team                             │
+│  → System: payments                                 │
+│  → Depends on: payment-processor, auth-service      │
+│  → API: Checkout REST API (rest)                    │
+│  → Lifecycle: production                            │
+│                                                     │
+│  "OK, this is production, owned by platform,        │
+│   and payment-processor depends on it.              │
+│   I'll be careful."                                 │
+└─────────────────────────────────────────────────────┘
+                          │
+                          ▼
+┌─────────────────────────────────────────────────────┐
 │  .yellowpages/                                      │
-│                                                  │
-│  services/                                       │
-│    EvoFg8sF.json    ← checkout-api               │
-│    zSLMBKV6.json    ← payment-processor          │
-│    k9Xm2wP1.json    ← auth-service              │
-│  systems/                                        │
-│    8RW4htFP.json    ← payments                   │
-│  owners/                                         │
-│    3GJ00QQO.json    ← platform-team              │
-│  config.json                                     │
-│                                                  │
-│  Plain JSON. Committed to git. Diffable.         │
-│  Your PR review IS your catalog review.          │
-└──────────────────────────────────────────────────┘
+│                                                     │
+│  services/                                          │
+│    EvoFg8sF.json    ← checkout-api                  │
+│    zSLMBKV6.json    ← payment-processor             │
+│    k9Xm2wP1.json    ← auth-service                 │
+│  systems/                                           │
+│    8RW4htFP.json    ← payments                      │
+│  owners/                                            │
+│    3GJ00QQO.json    ← platform-team                 │
+│  config.json                                        │
+│                                                     │
+│  Plain JSON. Committed to git. Diffable.            │
+│  Your PR review IS your catalog review.             │
+└─────────────────────────────────────────────────────┘
 ```
 
 **Design principles:**
