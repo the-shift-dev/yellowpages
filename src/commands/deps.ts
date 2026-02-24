@@ -1,4 +1,4 @@
-import { type DepNode, type DepsResult, findOrphans, resolveDeps } from "../deps.js";
+import { type DepNode, findOrphans, resolveDeps } from "../deps.js";
 import { readAll, requireRoot, resolveId } from "../store.js";
 import type { Service } from "../types.js";
 import type { OutputOptions } from "../utils/output.js";
@@ -68,7 +68,9 @@ export async function deps(
       json: () => ({ success: false, error: "missing_service" }),
       human: () => {
         error("Service name or ID required");
-        console.log(dim("  Usage: yp deps <service> [--direction up|down] [--depth N]"));
+        console.log(
+          dim("  Usage: yp deps <service> [--direction up|down] [--depth N]"),
+        );
         console.log(dim("         yp deps --orphans"));
       },
     });

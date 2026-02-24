@@ -3,7 +3,6 @@ import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import {
   type DiscoveredService,
-  type GitHubRepo,
   diffServices,
   discoverFromDir,
   discoverFromRepo,
@@ -21,7 +20,9 @@ afterEach(() => {
   rmSync(TEST_DIR, { recursive: true, force: true });
 });
 
-function makeService(overrides: Partial<Service> & { id: string; name: string }): Service {
+function makeService(
+  overrides: Partial<Service> & { id: string; name: string },
+): Service {
   return {
     created: "2026-01-01T00:00:00Z",
     updated: "2026-01-01T00:00:00Z",
@@ -60,24 +61,24 @@ spec:
 `;
     const result = parseCatalogFile(yaml, "test.yaml");
     expect(result).not.toBeNull();
-    expect(result!.name).toBe("checkout-api");
-    expect(result!.description).toBe("Handles checkout flow");
-    expect(result!.system).toBe("payments");
-    expect(result!.owner).toBe("platform-team");
-    expect(result!.lifecycle).toBe("production");
-    expect(result!.repo).toBe("https://github.com/co/checkout");
-    expect(result!.tags).toEqual(["backend", "critical"]);
-    expect(result!.apis).toHaveLength(1);
-    expect(result!.apis![0].name).toBe("Checkout REST API");
-    expect(result!.apis![0].type).toBe("rest");
-    expect(result!.dependsOn).toHaveLength(2);
-    expect(result!.dependsOn![0]).toEqual({ service: "payment-processor" });
-    expect(result!.dependsOn![1]).toEqual({
+    expect(result?.name).toBe("checkout-api");
+    expect(result?.description).toBe("Handles checkout flow");
+    expect(result?.system).toBe("payments");
+    expect(result?.owner).toBe("platform-team");
+    expect(result?.lifecycle).toBe("production");
+    expect(result?.repo).toBe("https://github.com/co/checkout");
+    expect(result?.tags).toEqual(["backend", "critical"]);
+    expect(result?.apis).toHaveLength(1);
+    expect(result?.apis?.[0].name).toBe("Checkout REST API");
+    expect(result?.apis?.[0].type).toBe("rest");
+    expect(result?.dependsOn).toHaveLength(2);
+    expect(result?.dependsOn?.[0]).toEqual({ service: "payment-processor" });
+    expect(result?.dependsOn?.[1]).toEqual({
       service: "auth-service",
       api: "OAuth",
       description: "Token validation",
     });
-    expect(result!.source).toBe("catalog-file");
+    expect(result?.source).toBe("catalog-file");
   });
 
   test("parses minimal catalog file", () => {
@@ -87,9 +88,9 @@ metadata:
 `;
     const result = parseCatalogFile(yaml, "test.yaml");
     expect(result).not.toBeNull();
-    expect(result!.name).toBe("simple-svc");
-    expect(result!.apis).toBeUndefined();
-    expect(result!.dependsOn).toBeUndefined();
+    expect(result?.name).toBe("simple-svc");
+    expect(result?.apis).toBeUndefined();
+    expect(result?.dependsOn).toBeUndefined();
   });
 
   test("returns null for missing name", () => {
@@ -122,7 +123,7 @@ spec:
     - svc-b
 `;
     const result = parseCatalogFile(yaml, "test.yaml");
-    expect(result!.dependsOn).toEqual([
+    expect(result?.dependsOn).toEqual([
       { service: "svc-a" },
       { service: "svc-b" },
     ]);
@@ -141,8 +142,8 @@ describe("discoverFromRepo", () => {
     );
     const result = discoverFromRepo(repoDir);
     expect(result).not.toBeNull();
-    expect(result!.name).toBe("my-service");
-    expect(result!.source).toBe("catalog-file");
+    expect(result?.name).toBe("my-service");
+    expect(result?.source).toBe("catalog-file");
   });
 
   test("discovers from .yellowpages/catalog.yaml", () => {
@@ -155,7 +156,7 @@ describe("discoverFromRepo", () => {
     );
     const result = discoverFromRepo(repoDir);
     expect(result).not.toBeNull();
-    expect(result!.name).toBe("yp-service");
+    expect(result?.name).toBe("yp-service");
   });
 
   test("infers from git repo when no catalog file", () => {
@@ -163,8 +164,8 @@ describe("discoverFromRepo", () => {
     mkdirSync(join(repoDir, ".git"), { recursive: true });
     const result = discoverFromRepo(repoDir);
     expect(result).not.toBeNull();
-    expect(result!.name).toBe("inferred-svc");
-    expect(result!.source).toBe("inferred");
+    expect(result?.name).toBe("inferred-svc");
+    expect(result?.source).toBe("inferred");
   });
 
   test("reads description from package.json when inferring", () => {
@@ -175,7 +176,7 @@ describe("discoverFromRepo", () => {
       JSON.stringify({ name: "node-svc", description: "A node service" }),
     );
     const result = discoverFromRepo(repoDir);
-    expect(result!.description).toBe("A node service");
+    expect(result?.description).toBe("A node service");
   });
 
   test("returns null for non-git directory without catalog", () => {
@@ -192,8 +193,8 @@ describe("discoverFromRepo", () => {
       `metadata:\n  name: explicit-name\n`,
     );
     const result = discoverFromRepo(repoDir);
-    expect(result!.name).toBe("explicit-name");
-    expect(result!.source).toBe("catalog-file");
+    expect(result?.name).toBe("explicit-name");
+    expect(result?.source).toBe("catalog-file");
   });
 });
 
@@ -254,8 +255,8 @@ describe("discoverFromDir", () => {
     expect(results).toHaveLength(2);
     const catalogSvc = results.find((r) => r.source === "catalog-file");
     const inferredSvc = results.find((r) => r.source === "inferred");
-    expect(catalogSvc!.name).toBe("explicit-service");
-    expect(inferredSvc!.name).toBe("inferred");
+    expect(catalogSvc?.name).toBe("explicit-service");
+    expect(inferredSvc?.name).toBe("inferred");
   });
 });
 
@@ -276,7 +277,9 @@ describe("diffServices", () => {
     const discovered: DiscoveredService[] = [
       { name: "svc-a", description: "Same", source: "inferred" },
     ];
-    const existing = [makeService({ id: "s1", name: "svc-a", description: "Same" })];
+    const existing = [
+      makeService({ id: "s1", name: "svc-a", description: "Same" }),
+    ];
     const diff = diffServices(discovered, existing);
     expect(diff.added).toHaveLength(0);
     expect(diff.updated).toHaveLength(0);
@@ -286,7 +289,9 @@ describe("diffServices", () => {
     const discovered: DiscoveredService[] = [
       { name: "svc-a", description: "New desc", source: "inferred" },
     ];
-    const existing = [makeService({ id: "s1", name: "svc-a", description: "Old desc" })];
+    const existing = [
+      makeService({ id: "s1", name: "svc-a", description: "Old desc" }),
+    ];
     const diff = diffServices(discovered, existing);
     expect(diff.updated).toHaveLength(1);
     expect(diff.updated[0].discovered.description).toBe("New desc");
@@ -297,7 +302,9 @@ describe("diffServices", () => {
     const discovered: DiscoveredService[] = [
       { name: "Checkout-API", description: "Updated", source: "inferred" },
     ];
-    const existing = [makeService({ id: "s1", name: "checkout-api", description: "Old" })];
+    const existing = [
+      makeService({ id: "s1", name: "checkout-api", description: "Old" }),
+    ];
     const diff = diffServices(discovered, existing);
     expect(diff.added).toHaveLength(0);
     expect(diff.updated).toHaveLength(1);
@@ -322,7 +329,9 @@ describe("diffServices", () => {
     const discovered: DiscoveredService[] = [
       { name: "svc-a", lifecycle: "deprecated", source: "inferred" },
     ];
-    const existing = [makeService({ id: "s1", name: "svc-a", lifecycle: "production" })];
+    const existing = [
+      makeService({ id: "s1", name: "svc-a", lifecycle: "production" }),
+    ];
     const diff = diffServices(discovered, existing);
     expect(diff.updated).toHaveLength(1);
   });
@@ -331,7 +340,9 @@ describe("diffServices", () => {
     const discovered: DiscoveredService[] = [
       { name: "svc-a", repo: "https://new-url", source: "inferred" },
     ];
-    const existing = [makeService({ id: "s1", name: "svc-a", repo: "https://old-url" })];
+    const existing = [
+      makeService({ id: "s1", name: "svc-a", repo: "https://old-url" }),
+    ];
     const diff = diffServices(discovered, existing);
     expect(diff.updated).toHaveLength(1);
   });

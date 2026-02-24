@@ -123,12 +123,8 @@ export function resolveDeps(
   return {
     service: { id: serviceId, name: service?.name ?? serviceId },
     dependents:
-      direction === "down"
-        ? []
-        : walkUp(serviceId, reverseIndex, maxDepth),
+      direction === "down" ? [] : walkUp(serviceId, reverseIndex, maxDepth),
     dependencies:
-      direction === "up"
-        ? []
-        : walkDown(serviceId, serviceMap, maxDepth),
+      direction === "up" ? [] : walkDown(serviceId, serviceMap, maxDepth),
   };
 }

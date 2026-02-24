@@ -1,13 +1,10 @@
 import {
-  type DiscoverDiff,
   type DiscoveredService,
   diffServices,
   discoverFromDir,
   discoverFromGitHub,
 } from "../discover.js";
-import { loadCatalog } from "../relations.js";
 import {
-  findByName,
   newId,
   readAll,
   requireRoot,
@@ -19,7 +16,6 @@ import type { OutputOptions } from "../utils/output.js";
 import {
   bold,
   bullet,
-  bulletDim,
   dim,
   error,
   info,
@@ -70,7 +66,7 @@ function applyService(
     repo: discovered.repo ?? existingService?.repo,
     tags: discovered.tags ?? existingService?.tags,
     apis: discovered.apis ?? existingService?.apis ?? [],
-    dependsOn: deps.length > 0 ? deps : existingService?.dependsOn ?? [],
+    dependsOn: deps.length > 0 ? deps : (existingService?.dependsOn ?? []),
     created: existingService?.created ?? now,
     updated: now,
   };
@@ -112,7 +108,8 @@ export async function discover(
           error: "github_error",
           message: (err as Error).message,
         }),
-        human: () => error(`GitHub discovery failed: ${(err as Error).message}`),
+        human: () =>
+          error(`GitHub discovery failed: ${(err as Error).message}`),
       });
       process.exit(1);
     }
@@ -151,9 +148,7 @@ export async function discover(
       }),
       human: () => {
         console.log();
-        info(
-          `Discovered ${bold(String(discovered.length))} service(s)`,
-        );
+        info(`Discovered ${bold(String(discovered.length))} service(s)`);
         console.log();
 
         if (diff.added.length > 0) {

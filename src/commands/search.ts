@@ -1,5 +1,5 @@
-import { readAll, readOne, requireRoot } from "../store.js";
 import { getSearchIndex, parseDocId } from "../search-index.js";
+import { readAll, requireRoot } from "../store.js";
 import type { Owner, Service, System } from "../types.js";
 import type { OutputOptions } from "../utils/output.js";
 import { bold, bullet, dim, info, output, warn } from "../utils/output.js";
@@ -51,16 +51,19 @@ export async function search(
       return {
         kind,
         id,
-        name: (hit as any).name ?? "",
-        description: (hit as any).description ?? "",
+        name: ((hit as Record<string, unknown>).name as string) ?? "",
+        description:
+          ((hit as Record<string, unknown>).description as string) ?? "",
         score: hit.score,
       };
     });
   } else {
     // Filter-only mode (no query text)
     // If service-specific filters are active, only search services
-    const serviceFiltersActive = options.noOwner || options.noSystem || options.lifecycle;
-    const effectiveKind = options.kind ?? (serviceFiltersActive ? "service" : undefined);
+    const serviceFiltersActive =
+      options.noOwner || options.noSystem || options.lifecycle;
+    const effectiveKind =
+      options.kind ?? (serviceFiltersActive ? "service" : undefined);
 
     const services = readAll<Service>(root, "services");
     const systems = readAll<System>(root, "systems");
@@ -109,27 +112,25 @@ export async function search(
   if (options.noOwner) {
     const services = readAll<Service>(root, "services");
     const unowned = new Set(services.filter((s) => !s.owner).map((s) => s.id));
-    results = results.filter(
-      (r) => r.kind !== "service" || unowned.has(r.id),
-    );
+    results = results.filter((r) => r.kind !== "service" || unowned.has(r.id));
   }
 
   if (options.noSystem) {
     const services = readAll<Service>(root, "services");
-    const orphaned = new Set(services.filter((s) => !s.system).map((s) => s.id));
-    results = results.filter(
-      (r) => r.kind !== "service" || orphaned.has(r.id),
+    const orphaned = new Set(
+      services.filter((s) => !s.system).map((s) => s.id),
     );
+    results = results.filter((r) => r.kind !== "service" || orphaned.has(r.id));
   }
 
   if (options.lifecycle) {
     const services = readAll<Service>(root, "services");
     const matching = new Set(
-      services.filter((s) => s.lifecycle === options.lifecycle).map((s) => s.id),
+      services
+        .filter((s) => s.lifecycle === options.lifecycle)
+        .map((s) => s.id),
     );
-    results = results.filter(
-      (r) => r.kind !== "service" || matching.has(r.id),
-    );
+    results = results.filter((r) => r.kind !== "service" || matching.has(r.id));
   }
 
   output(options, {
@@ -146,7 +147,9 @@ export async function search(
     }),
     human: () => {
       if (results.length === 0) {
-        info(query ? `No results for "${query}"` : "No results matching filters");
+        info(
+          query ? `No results for "${query}"` : "No results matching filters",
+        );
         return;
       }
 

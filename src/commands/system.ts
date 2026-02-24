@@ -46,32 +46,31 @@ systemCommand
 
     output(options, {
       json: () => ({ success: true, system }),
-      human: () => success(`System ${bold(system.name)} added (${dim(system.id)})`),
+      human: () =>
+        success(`System ${bold(system.name)} added (${dim(system.id)})`),
     });
   });
 
 // --- list ---
-systemCommand
-  .command("list")
-  .action((_opts, cmd) => {
-    const options = getOutputOptions(cmd);
-    const root = requireRoot();
-    const catalog = loadCatalog(root);
+systemCommand.command("list").action((_opts, cmd) => {
+  const options = getOutputOptions(cmd);
+  const root = requireRoot();
+  const catalog = loadCatalog(root);
 
-    output(options, {
-      json: () => ({ systems: catalog.systems }),
-      human: () => {
-        if (catalog.systems.length === 0) {
-          console.log(dim("No systems found."));
-          return;
-        }
-        for (const s of catalog.systems) {
-          bullet(`${bold(s.name)}  ${dim(s.id)}`);
-          if (s.description) console.log(`    ${dim(s.description)}`);
-        }
-      },
-    });
+  output(options, {
+    json: () => ({ systems: catalog.systems }),
+    human: () => {
+      if (catalog.systems.length === 0) {
+        console.log(dim("No systems found."));
+        return;
+      }
+      for (const s of catalog.systems) {
+        bullet(`${bold(s.name)}  ${dim(s.id)}`);
+        if (s.description) console.log(`    ${dim(s.description)}`);
+      }
+    },
   });
+});
 
 // --- show ---
 systemCommand

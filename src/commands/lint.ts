@@ -1,7 +1,15 @@
 import { readAll, requireRoot } from "../store.js";
 import type { Owner, Service, System } from "../types.js";
 import type { OutputOptions } from "../utils/output.js";
-import { bold, dim, error, info, output, success, warn } from "../utils/output.js";
+import {
+  bold,
+  dim,
+  error,
+  info,
+  output,
+  success,
+  warn,
+} from "../utils/output.js";
 
 export type Severity = "error" | "warning";
 

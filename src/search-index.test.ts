@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
-import { mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { getSearchIndex, parseDocId } from "./search-index";
 import { initStore, writeRecord } from "./store";
@@ -19,7 +19,10 @@ afterEach(() => {
 
 describe("parseDocId", () => {
   test("parses service:abc123", () => {
-    expect(parseDocId("service:abc123")).toEqual({ kind: "service", id: "abc123" });
+    expect(parseDocId("service:abc123")).toEqual({
+      kind: "service",
+      id: "abc123",
+    });
   });
 
   test("parses system:xyz", () => {
@@ -83,7 +86,13 @@ describe("getSearchIndex", () => {
     writeRecord<Service>(root, "services", {
       id: "s1",
       name: "gateway",
-      apis: [{ name: "Admin gRPC API", type: "grpc", description: "Internal admin endpoints" }],
+      apis: [
+        {
+          name: "Admin gRPC API",
+          type: "grpc",
+          description: "Internal admin endpoints",
+        },
+      ],
       created: "2026-01-01T00:00:00Z",
       updated: "2026-01-01T00:00:00Z",
     });

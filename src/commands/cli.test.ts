@@ -50,7 +50,14 @@ describe("init", () => {
 
 describe("owner", () => {
   test("add and list", () => {
-    const { data: added } = runJson("owner", "add", "--name", "platform", "--type", "team");
+    const { data: added } = runJson(
+      "owner",
+      "add",
+      "--name",
+      "platform",
+      "--type",
+      "team",
+    );
     expect(added.success).toBe(true);
     expect(added.owner.name).toBe("platform");
     expect(added.owner.type).toBe("team");
@@ -62,8 +69,16 @@ describe("owner", () => {
 
   test("add with email and slack", () => {
     const { data } = runJson(
-      "owner", "add", "--name", "infra", "--type", "team",
-      "--email", "infra@co.com", "--slack", "#infra",
+      "owner",
+      "add",
+      "--name",
+      "infra",
+      "--type",
+      "team",
+      "--email",
+      "infra@co.com",
+      "--slack",
+      "#infra",
     );
     expect(data.owner.email).toBe("infra@co.com");
     expect(data.owner.slack).toBe("#infra");
@@ -78,7 +93,16 @@ describe("owner", () => {
   test("show returns services and systems owned", () => {
     runJson("owner", "add", "--name", "platform", "--type", "team");
     runJson("system", "add", "--name", "payments", "--owner", "platform");
-    runJson("service", "add", "--name", "checkout", "--owner", "platform", "--system", "payments");
+    runJson(
+      "service",
+      "add",
+      "--name",
+      "checkout",
+      "--owner",
+      "platform",
+      "--system",
+      "payments",
+    );
 
     const { data } = runJson("owner", "show", "platform");
     expect(data.services).toHaveLength(1);
@@ -127,7 +151,14 @@ describe("system", () => {
 
   test("add with owner resolution by name", () => {
     runJson("owner", "add", "--name", "platform", "--type", "team");
-    const { data } = runJson("system", "add", "--name", "payments", "--owner", "platform");
+    const { data } = runJson(
+      "system",
+      "add",
+      "--name",
+      "payments",
+      "--owner",
+      "platform",
+    );
     expect(data.system.owner).toBeTruthy();
   });
 
@@ -156,9 +187,14 @@ describe("system", () => {
 describe("service", () => {
   test("add and list", () => {
     const { data: added } = runJson(
-      "service", "add", "--name", "checkout-api",
-      "--description", "Handles checkout",
-      "--lifecycle", "production",
+      "service",
+      "add",
+      "--name",
+      "checkout-api",
+      "--description",
+      "Handles checkout",
+      "--lifecycle",
+      "production",
     );
     expect(added.success).toBe(true);
     expect(added.service.name).toBe("checkout-api");
@@ -172,8 +208,14 @@ describe("service", () => {
     runJson("owner", "add", "--name", "platform", "--type", "team");
     runJson("system", "add", "--name", "payments");
     const { data } = runJson(
-      "service", "add", "--name", "checkout",
-      "--owner", "platform", "--system", "payments",
+      "service",
+      "add",
+      "--name",
+      "checkout",
+      "--owner",
+      "platform",
+      "--system",
+      "payments",
     );
     expect(data.service.owner).toBeTruthy();
     expect(data.service.system).toBeTruthy();
@@ -181,13 +223,26 @@ describe("service", () => {
 
   test("add with tags", () => {
     const { data } = runJson(
-      "service", "add", "--name", "svc", "--tag", "backend", "critical",
+      "service",
+      "add",
+      "--name",
+      "svc",
+      "--tag",
+      "backend",
+      "critical",
     );
     expect(data.service.tags).toEqual(["backend", "critical"]);
   });
 
   test("show by name", () => {
-    runJson("service", "add", "--name", "checkout-api", "--description", "test");
+    runJson(
+      "service",
+      "add",
+      "--name",
+      "checkout-api",
+      "--description",
+      "test",
+    );
     const { data } = runJson("service", "show", "checkout-api");
     expect(data.service.name).toBe("checkout-api");
     expect(data.service.description).toBe("test");
@@ -196,7 +251,16 @@ describe("service", () => {
   test("show resolves owner and system", () => {
     runJson("owner", "add", "--name", "platform", "--type", "team");
     runJson("system", "add", "--name", "payments");
-    runJson("service", "add", "--name", "checkout", "--owner", "platform", "--system", "payments");
+    runJson(
+      "service",
+      "add",
+      "--name",
+      "checkout",
+      "--owner",
+      "platform",
+      "--system",
+      "payments",
+    );
 
     const { data } = runJson("service", "show", "checkout");
     expect(data.owner.name).toBe("platform");
@@ -261,9 +325,15 @@ describe("service", () => {
   test("api-add adds API to service", () => {
     runJson("service", "add", "--name", "checkout");
     const { data } = runJson(
-      "service", "api-add", "checkout",
-      "--name", "REST API", "--type", "rest",
-      "--description", "Public endpoints",
+      "service",
+      "api-add",
+      "checkout",
+      "--name",
+      "REST API",
+      "--type",
+      "rest",
+      "--description",
+      "Public endpoints",
     );
     expect(data.success).toBe(true);
     expect(data.service.apis).toHaveLength(1);
@@ -272,7 +342,15 @@ describe("service", () => {
   });
 
   test("api-add to nonexistent service fails", () => {
-    const { exitCode } = run("service", "api-add", "ghost", "--name", "x", "--type", "rest");
+    const { exitCode } = run(
+      "service",
+      "api-add",
+      "ghost",
+      "--name",
+      "x",
+      "--type",
+      "rest",
+    );
     expect(exitCode).not.toBe(0);
   });
 
@@ -280,8 +358,13 @@ describe("service", () => {
     runJson("service", "add", "--name", "checkout");
     runJson("service", "add", "--name", "payments");
     const { data } = runJson(
-      "service", "dep-add", "checkout",
-      "--on", "payments", "--description", "sends payments",
+      "service",
+      "dep-add",
+      "checkout",
+      "--on",
+      "payments",
+      "--description",
+      "sends payments",
     );
     expect(data.success).toBe(true);
     expect(data.service.dependsOn).toHaveLength(1);
@@ -294,8 +377,24 @@ describe("service", () => {
 
   test("multiple APIs on same service", () => {
     runJson("service", "add", "--name", "gateway");
-    runJson("service", "api-add", "gateway", "--name", "REST", "--type", "rest");
-    runJson("service", "api-add", "gateway", "--name", "gRPC", "--type", "grpc");
+    runJson(
+      "service",
+      "api-add",
+      "gateway",
+      "--name",
+      "REST",
+      "--type",
+      "rest",
+    );
+    runJson(
+      "service",
+      "api-add",
+      "gateway",
+      "--name",
+      "gRPC",
+      "--type",
+      "grpc",
+    );
 
     const { data } = runJson("service", "show", "gateway");
     expect(data.service.apis).toHaveLength(2);
@@ -317,31 +416,56 @@ describe("service", () => {
 
 describe("search", () => {
   test("finds service by name", () => {
-    runJson("service", "add", "--name", "checkout-api", "--description", "Handles checkout");
+    runJson(
+      "service",
+      "add",
+      "--name",
+      "checkout-api",
+      "--description",
+      "Handles checkout",
+    );
     const { data } = runJson("search", "checkout");
     expect(data.count).toBe(1);
     expect(data.results[0].name).toBe("checkout-api");
   });
 
   test("finds service by description", () => {
-    runJson("service", "add", "--name", "pay-svc", "--description", "Processes payments via Stripe");
+    runJson(
+      "service",
+      "add",
+      "--name",
+      "pay-svc",
+      "--description",
+      "Processes payments via Stripe",
+    );
     const { data } = runJson("search", "stripe");
     expect(data.count).toBe(1);
     expect(data.results[0].name).toBe("pay-svc");
   });
 
   test("finds system by name", () => {
-    runJson("system", "add", "--name", "payments", "--description", "Money stuff");
+    runJson(
+      "system",
+      "add",
+      "--name",
+      "payments",
+      "--description",
+      "Money stuff",
+    );
     const { data } = runJson("search", "payments");
     expect(data.count).toBeGreaterThanOrEqual(1);
-    expect(data.results.some((r: any) => r.kind === "system")).toBe(true);
+    expect(
+      data.results.some((r: Record<string, unknown>) => r.kind === "system"),
+    ).toBe(true);
   });
 
   test("--kind filters to specific entity type", () => {
     runJson("service", "add", "--name", "payments-svc");
     runJson("system", "add", "--name", "payments");
     const { data } = runJson("search", "payments", "--kind", "system");
-    expect(data.results.every((r: any) => r.kind === "system")).toBe(true);
+    expect(
+      data.results.every((r: Record<string, unknown>) => r.kind === "system"),
+    ).toBe(true);
   });
 
   test("--unowned finds services without owner", () => {
@@ -370,10 +494,21 @@ describe("search", () => {
   test("rebuilds index after adding new entity", () => {
     runJson("service", "add", "--name", "first-svc");
     runJson("search", "first"); // prime the index
-    runJson("service", "add", "--name", "second-svc", "--description", "Brand new");
+    runJson(
+      "service",
+      "add",
+      "--name",
+      "second-svc",
+      "--description",
+      "Brand new",
+    );
     const { data } = runJson("search", "brand new");
     expect(data.count).toBeGreaterThanOrEqual(1);
-    expect(data.results.some((r: any) => r.name === "second-svc")).toBe(true);
+    expect(
+      data.results.some(
+        (r: Record<string, unknown>) => r.name === "second-svc",
+      ),
+    ).toBe(true);
   });
 });
 
@@ -402,7 +537,11 @@ describe("lint", () => {
     const { data, exitCode } = runJson("lint");
     expect(exitCode).toBe(1);
     expect(data.errors).toBeGreaterThanOrEqual(1);
-    expect(data.results.some((r: any) => r.type === "dangling_dependency")).toBe(true);
+    expect(
+      data.results.some(
+        (r: Record<string, unknown>) => r.type === "dangling_dependency",
+      ),
+    ).toBe(true);
   });
 
   test("orphaned owner ref is an error", () => {
@@ -411,14 +550,22 @@ describe("lint", () => {
     runJson("owner", "rm", "platform");
     const { data, exitCode } = runJson("lint");
     expect(exitCode).toBe(1);
-    expect(data.results.some((r: any) => r.type === "orphaned_owner_ref")).toBe(true);
+    expect(
+      data.results.some(
+        (r: Record<string, unknown>) => r.type === "orphaned_owner_ref",
+      ),
+    ).toBe(true);
   });
 
   test("empty system is a warning", () => {
     runJson("system", "add", "--name", "empty-sys");
     const { data } = runJson("lint");
     expect(data.warnings).toBeGreaterThanOrEqual(1);
-    expect(data.results.some((r: any) => r.type === "empty_system")).toBe(true);
+    expect(
+      data.results.some(
+        (r: Record<string, unknown>) => r.type === "empty_system",
+      ),
+    ).toBe(true);
   });
 });
 
@@ -465,13 +612,24 @@ describe("deps", () => {
     runJson("service", "dep-add", "payments", "--on", "stripe");
 
     // depth 1 should not reach stripe from gateway
-    const { data: shallow } = runJson("deps", "gateway", "--direction", "down", "--depth", "1");
-    const payments = shallow.dependencies.find((d: any) => d.name === "payments");
+    const { data: shallow } = runJson(
+      "deps",
+      "gateway",
+      "--direction",
+      "down",
+      "--depth",
+      "1",
+    );
+    const payments = shallow.dependencies.find(
+      (d: Record<string, unknown>) => d.name === "payments",
+    );
     expect(payments.children).toEqual([]);
 
     // default depth should reach stripe
     const { data: deep } = runJson("deps", "gateway", "--direction", "down");
-    const paymentsDeep = deep.dependencies.find((d: any) => d.name === "payments");
+    const paymentsDeep = deep.dependencies.find(
+      (d: Record<string, unknown>) => d.name === "payments",
+    );
     expect(paymentsDeep.children).toHaveLength(1);
     expect(paymentsDeep.children[0].name).toBe("stripe");
   });
@@ -556,7 +714,9 @@ describe("discover", () => {
     // Verify services were added
     const { data: list } = runJson("service", "list");
     expect(list.services).toHaveLength(2);
-    const names = list.services.map((s: any) => s.name).sort();
+    const names = list.services
+      .map((s: Record<string, unknown>) => s.name)
+      .sort();
     expect(names).toEqual(["catalog-service", "inferred-repo"]);
   });
 

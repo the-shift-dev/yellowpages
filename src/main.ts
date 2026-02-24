@@ -19,7 +19,9 @@ const program = new Command();
 
 program
   .name("yp")
-  .description("📒 Service catalog for AI coding agents. Look it up before you break it.")
+  .description(
+    "📒 Service catalog for AI coding agents. Look it up before you break it.",
+  )
   .version(`yp 📒 ${version}`, "-v, --version")
   .option("--json", "Output as JSON")
   .option("-q, --quiet", "Suppress output");

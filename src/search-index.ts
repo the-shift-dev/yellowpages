@@ -1,11 +1,17 @@
-import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  readdirSync,
+  readFileSync,
+  statSync,
+  writeFileSync,
+} from "node:fs";
 import { join } from "node:path";
 import MiniSearch from "minisearch";
 import { readAll } from "./store.js";
 import type { Owner, Service, System } from "./types.js";
 
-const INDEX_FILE = ".yellowpages/.search-index.json";
-const HASH_FILE = ".yellowpages/.search-hash";
+const _INDEX_FILE = ".yellowpages/.search-index.json";
+const _HASH_FILE = ".yellowpages/.search-hash";
 
 interface SearchDocument {
   id: string;
@@ -39,7 +45,9 @@ function computeCatalogHash(root: string): string {
   for (const collection of ["services", "systems", "owners"]) {
     const dir = join(root, collection);
     if (!existsSync(dir)) continue;
-    const files = readdirSync(dir).filter((f) => f.endsWith(".json")).sort();
+    const files = readdirSync(dir)
+      .filter((f) => f.endsWith(".json"))
+      .sort();
     for (const file of files) {
       const stat = statSync(join(dir, file));
       parts.push(`${collection}/${file}:${stat.mtimeMs}:${stat.size}`);
@@ -55,7 +63,9 @@ function serviceToDoc(s: Service): SearchDocument {
     name: s.name,
     description: s.description ?? "",
     tags: (s.tags ?? []).join(" "),
-    apis: (s.apis ?? []).map((a) => `${a.name} ${a.description ?? ""}`).join(" "),
+    apis: (s.apis ?? [])
+      .map((a) => `${a.name} ${a.description ?? ""}`)
+      .join(" "),
     lifecycle: s.lifecycle ?? "",
     ownerType: "",
   };
@@ -99,10 +109,17 @@ export function getSearchIndex(root: string): MiniSearch<SearchDocument> {
   if (existsSync(hashFile) && existsSync(indexFile)) {
     const storedHash = readFileSync(hashFile, "utf-8").trim();
     if (storedHash === currentHash) {
-      const index = createMiniSearch();
+      const _index = createMiniSearch();
       const data = JSON.parse(readFileSync(indexFile, "utf-8"));
       return MiniSearch.loadJSON<SearchDocument>(JSON.stringify(data), {
-        fields: ["name", "description", "tags", "apis", "lifecycle", "ownerType"],
+        fields: [
+          "name",
+          "description",
+          "tags",
+          "apis",
+          "lifecycle",
+          "ownerType",
+        ],
         storeFields: ["kind", "name", "description"],
         searchOptions: {
           boost: { name: 3, description: 2, tags: 1.5 },

@@ -1,4 +1,4 @@
-import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { basename, join } from "node:path";
 import yaml from "js-yaml";
 import type { Api, Dependency, Lifecycle, Service } from "./types.js";
@@ -18,8 +18,16 @@ export interface CatalogFileSpec {
     lifecycle?: string;
     repo?: string;
     tags?: string[];
-    apis?: { name: string; type: string; spec?: string; description?: string }[];
-    dependsOn?: (string | { service: string; api?: string; description?: string })[];
+    apis?: {
+      name: string;
+      type: string;
+      spec?: string;
+      description?: string;
+    }[];
+    dependsOn?: (
+      | string
+      | { service: string; api?: string; description?: string }
+    )[];
   };
 }
 
@@ -83,7 +91,10 @@ export function parseCatalogFile(
 // --- Local directory discovery ---
 
 const CATALOG_FILENAMES = ["catalog-info.yaml", "catalog-info.yml"];
-const YELLOWPAGES_CATALOG = [".yellowpages/catalog.yaml", ".yellowpages/catalog.yml"];
+const YELLOWPAGES_CATALOG = [
+  ".yellowpages/catalog.yaml",
+  ".yellowpages/catalog.yml",
+];
 
 /**
  * Discover services from a local directory tree.
@@ -184,7 +195,8 @@ export async function fetchGitHubRepos(
     Accept: "application/vnd.github.v3+json",
     "User-Agent": "yellowpages-cli",
   };
-  const token = options.token ?? process.env.GITHUB_TOKEN ?? process.env.GH_TOKEN;
+  const token =
+    options.token ?? process.env.GITHUB_TOKEN ?? process.env.GH_TOKEN;
   if (token) headers.Authorization = `token ${token}`;
 
   const repos: GitHubRepo[] = [];
@@ -206,7 +218,11 @@ export async function fetchGitHubRepos(
     if (r.fork && !options.includeForks) return false;
     if (r.archived && !options.includeArchived) return false;
     if (options.topic && !r.topics.includes(options.topic)) return false;
-    if (options.language && r.language?.toLowerCase() !== options.language.toLowerCase()) return false;
+    if (
+      options.language &&
+      r.language?.toLowerCase() !== options.language.toLowerCase()
+    )
+      return false;
     return true;
   });
 }
@@ -242,7 +258,8 @@ export async function discoverFromGitHub(
   options: GitHubDiscoverOptions,
 ): Promise<DiscoveredService[]> {
   const repos = await fetchGitHubRepos(options);
-  const token = options.token ?? process.env.GITHUB_TOKEN ?? process.env.GH_TOKEN;
+  const token =
+    options.token ?? process.env.GITHUB_TOKEN ?? process.env.GH_TOKEN;
   const results: DiscoveredService[] = [];
 
   for (const repo of repos) {
@@ -317,8 +334,9 @@ export function diffServices(
   }
 
   const unchanged = existing.filter(
-    (s) => !matchedNames.has(s.name.toLowerCase()) || 
-           !updated.some((u) => u.existing.id === s.id),
+    (s) =>
+      !matchedNames.has(s.name.toLowerCase()) ||
+      !updated.some((u) => u.existing.id === s.id),
   );
 
   return { added, updated, unchanged };

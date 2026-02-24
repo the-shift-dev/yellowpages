@@ -46,7 +46,8 @@ ownerCommand
 
     output(options, {
       json: () => ({ success: true, owner }),
-      human: () => success(`Owner ${bold(owner.name)} added (${dim(owner.id)})`),
+      human: () =>
+        success(`Owner ${bold(owner.name)} added (${dim(owner.id)})`),
     });
   });
 

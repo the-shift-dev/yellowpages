@@ -28,7 +28,10 @@ serviceCommand
   .option("--description <desc>", "What this service does")
   .option("--system <id-or-name>", "System this service belongs to")
   .option("--owner <id-or-name>", "Team or person who owns this")
-  .option("--lifecycle <stage>", "experimental | production | deprecated | decommissioned")
+  .option(
+    "--lifecycle <stage>",
+    "experimental | production | deprecated | decommissioned",
+  )
   .option("--repo <url>", "Repository URL")
   .option("--tag <tags...>", "Tags")
   .action((opts, cmd) => {
@@ -59,7 +62,8 @@ serviceCommand
 
     output(options, {
       json: () => ({ success: true, service }),
-      human: () => success(`Service ${bold(service.name)} added (${dim(service.id)})`),
+      human: () =>
+        success(`Service ${bold(service.name)} added (${dim(service.id)})`),
     });
   });
 
@@ -135,13 +139,16 @@ serviceCommand
         if (system) console.log(`  System:    ${system.name}`);
         if (service.lifecycle) console.log(`  Lifecycle: ${service.lifecycle}`);
         if (service.repo) console.log(`  Repo:      ${service.repo}`);
-        if (service.tags?.length) console.log(`  Tags:      ${service.tags.join(", ")}`);
+        if (service.tags?.length)
+          console.log(`  Tags:      ${service.tags.join(", ")}`);
 
         if (service.apis?.length) {
           console.log();
           console.log(bold("  APIs"));
           for (const api of service.apis) {
-            console.log(`    ${api.name} (${api.type})${api.description ? ` — ${api.description}` : ""}`);
+            console.log(
+              `    ${api.name} (${api.type})${api.description ? ` — ${api.description}` : ""}`,
+            );
           }
         }
 
@@ -149,9 +156,13 @@ serviceCommand
           console.log();
           console.log(bold("  Dependencies"));
           for (const dep of service.dependsOn) {
-            const depService = catalog.services.find((s) => s.id === dep.service);
+            const depService = catalog.services.find(
+              (s) => s.id === dep.service,
+            );
             const name = depService?.name ?? dep.service;
-            console.log(`    → ${name}${dep.api ? ` (${dep.api})` : ""}${dep.description ? ` — ${dep.description}` : ""}`);
+            console.log(
+              `    → ${name}${dep.api ? ` (${dep.api})` : ""}${dep.description ? ` — ${dep.description}` : ""}`,
+            );
           }
         }
 
@@ -159,7 +170,9 @@ serviceCommand
           console.log();
           console.log(bold("  Dependents"));
           for (const dep of resolved.dependents) {
-            console.log(`    ← ${dep.service.name}${dep.api ? ` (${dep.api})` : ""}${dep.description ? ` — ${dep.description}` : ""}`);
+            console.log(
+              `    ← ${dep.service.name}${dep.api ? ` (${dep.api})` : ""}${dep.description ? ` — ${dep.description}` : ""}`,
+            );
           }
         }
 
@@ -199,38 +212,41 @@ serviceCommand
   .requiredOption("--type <type>", "rest | grpc | graphql | event | other")
   .option("--spec <path>", "Path to API spec file")
   .option("--description <desc>", "API description")
-  .action((serviceIdOrName: string, opts: Record<string, string>, cmd: Command) => {
-    const options = getOutputOptions(cmd);
-    const root = requireRoot();
+  .action(
+    (serviceIdOrName: string, opts: Record<string, string>, cmd: Command) => {
+      const options = getOutputOptions(cmd);
+      const root = requireRoot();
 
-    const id = resolveId<Service>(root, "services", serviceIdOrName);
-    const service = readOne<Service>(root, "services", id);
+      const id = resolveId<Service>(root, "services", serviceIdOrName);
+      const service = readOne<Service>(root, "services", id);
 
-    if (!service) {
+      if (!service) {
+        output(options, {
+          json: () => ({ success: false, error: "service_not_found" }),
+          human: () => error(`Service not found: ${serviceIdOrName}`),
+        });
+        process.exit(1);
+      }
+
+      const api: Api = {
+        name: opts.name,
+        type: opts.type as Api["type"],
+        spec: opts.spec,
+        description: opts.description,
+      };
+
+      service.apis = service.apis ?? [];
+      service.apis.push(api);
+      service.updated = new Date().toISOString();
+      writeRecord(root, "services", service);
+
       output(options, {
-        json: () => ({ success: false, error: "service_not_found" }),
-        human: () => error(`Service not found: ${serviceIdOrName}`),
+        json: () => ({ success: true, service }),
+        human: () =>
+          success(`Added API ${bold(api.name)} to ${bold(service.name)}`),
       });
-      process.exit(1);
-    }
-
-    const api: Api = {
-      name: opts.name,
-      type: opts.type as Api["type"],
-      spec: opts.spec,
-      description: opts.description,
-    };
-
-    service.apis = service.apis ?? [];
-    service.apis.push(api);
-    service.updated = new Date().toISOString();
-    writeRecord(root, "services", service);
-
-    output(options, {
-      json: () => ({ success: true, service }),
-      human: () => success(`Added API ${bold(api.name)} to ${bold(service.name)}`),
-    });
-  });
+    },
+  );
 
 // --- dep add ---
 serviceCommand
@@ -238,35 +254,38 @@ serviceCommand
   .requiredOption("--on <target-service>", "Service this depends on")
   .option("--api <api-name>", "Which API it consumes")
   .option("--description <desc>", "Dependency description")
-  .action((serviceIdOrName: string, opts: Record<string, string>, cmd: Command) => {
-    const options = getOutputOptions(cmd);
-    const root = requireRoot();
+  .action(
+    (serviceIdOrName: string, opts: Record<string, string>, cmd: Command) => {
+      const options = getOutputOptions(cmd);
+      const root = requireRoot();
 
-    const id = resolveId<Service>(root, "services", serviceIdOrName);
-    const service = readOne<Service>(root, "services", id);
+      const id = resolveId<Service>(root, "services", serviceIdOrName);
+      const service = readOne<Service>(root, "services", id);
 
-    if (!service) {
+      if (!service) {
+        output(options, {
+          json: () => ({ success: false, error: "service_not_found" }),
+          human: () => error(`Service not found: ${serviceIdOrName}`),
+        });
+        process.exit(1);
+      }
+
+      const targetId = resolveId<Service>(root, "services", opts.on);
+      const dep: Dependency = {
+        service: targetId,
+        api: opts.api,
+        description: opts.description,
+      };
+
+      service.dependsOn = service.dependsOn ?? [];
+      service.dependsOn.push(dep);
+      service.updated = new Date().toISOString();
+      writeRecord(root, "services", service);
+
       output(options, {
-        json: () => ({ success: false, error: "service_not_found" }),
-        human: () => error(`Service not found: ${serviceIdOrName}`),
+        json: () => ({ success: true, service }),
+        human: () =>
+          success(`${bold(service.name)} now depends on ${bold(opts.on)}`),
       });
-      process.exit(1);
-    }
-
-    const targetId = resolveId<Service>(root, "services", opts.on);
-    const dep: Dependency = {
-      service: targetId,
-      api: opts.api,
-      description: opts.description,
-    };
-
-    service.dependsOn = service.dependsOn ?? [];
-    service.dependsOn.push(dep);
-    service.updated = new Date().toISOString();
-    writeRecord(root, "services", service);
-
-    output(options, {
-      json: () => ({ success: true, service }),
-      human: () => success(`${bold(service.name)} now depends on ${bold(opts.on)}`),
-    });
-  });
+    },
+  );

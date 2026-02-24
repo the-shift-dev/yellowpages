@@ -2,7 +2,7 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { requireRoot } from "../store.js";
 import type { OutputOptions } from "../utils/output.js";
-import { cmd, hint, info, output, success, warn } from "../utils/output.js";
+import { hint, info, output, success } from "../utils/output.js";
 
 const ONBOARD_BLOCK = `<yellowpages>
 Use \`yp\` to explore the service catalog before making changes. Data is stored in \`.yellowpages/\` as JSON files, tracked by git.

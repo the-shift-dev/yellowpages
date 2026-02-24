@@ -1,5 +1,11 @@
 import { afterEach, beforeEach, expect, test } from "bun:test";
-import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { join } from "node:path";
 import {
   deleteRecord,
@@ -15,7 +21,7 @@ import {
   writeConfig,
   writeRecord,
 } from "./store";
-import type { Config, Owner, Service, System } from "./types";
+import type { Config, Owner, Service } from "./types";
 
 const TEST_DIR = join(import.meta.dir, "..", ".test-tmp");
 

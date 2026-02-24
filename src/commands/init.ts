@@ -1,5 +1,3 @@
-import { existsSync } from "node:fs";
-import { join } from "node:path";
 import { findRoot, initStore } from "../store.js";
 import type { OutputOptions } from "../utils/output.js";
 import { cmd, hint, info, output, success } from "../utils/output.js";
@@ -26,8 +24,12 @@ export async function init(
       console.log();
       hint("Next steps:");
       console.log(`  ${cmd("yp owner add --name platform-team --type team")}`);
-      console.log(`  ${cmd("yp system add --name payments --owner platform-team")}`);
-      console.log(`  ${cmd("yp service add --name checkout-api --system payments")}`);
+      console.log(
+        `  ${cmd("yp system add --name payments --owner platform-team")}`,
+      );
+      console.log(
+        `  ${cmd("yp service add --name checkout-api --system payments")}`,
+      );
       console.log();
       hint("Commit .yellowpages/ to git — it's your service catalog.");
     },

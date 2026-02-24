@@ -26,8 +26,11 @@ export function ensureGitignore(root: string): void {
   const lines = existing.split("\n").map((l) => l.trim());
   const missing = GITIGNORE_ENTRIES.filter((e) => !lines.includes(e));
   if (missing.length === 0) return;
-  const append = missing.join("\n") + "\n";
-  writeFileSync(gitignorePath, existing ? `${existing.trimEnd()}\n${append}` : append);
+  const append = `${missing.join("\n")}\n`;
+  writeFileSync(
+    gitignorePath,
+    existing ? `${existing.trimEnd()}\n${append}` : append,
+  );
 }
 
 /**
@@ -132,9 +135,7 @@ export function findByName<T extends { id: string; name: string }>(
   name: string,
 ): T | null {
   const all = readAll<T>(root, collection);
-  return (
-    all.find((r) => r.name.toLowerCase() === name.toLowerCase()) ?? null
-  );
+  return all.find((r) => r.name.toLowerCase() === name.toLowerCase()) ?? null;
 }
 
 /**

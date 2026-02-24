@@ -13,7 +13,9 @@ import {
 
 // --- Helpers ---
 
-function makeService(overrides: Partial<Service> & { id: string; name: string }): Service {
+function makeService(
+  overrides: Partial<Service> & { id: string; name: string },
+): Service {
   return {
     created: "2026-01-01T00:00:00Z",
     updated: "2026-01-01T00:00:00Z",
@@ -21,7 +23,9 @@ function makeService(overrides: Partial<Service> & { id: string; name: string })
   };
 }
 
-function makeSystem(overrides: Partial<System> & { id: string; name: string }): System {
+function makeSystem(
+  overrides: Partial<System> & { id: string; name: string },
+): System {
   return {
     created: "2026-01-01T00:00:00Z",
     updated: "2026-01-01T00:00:00Z",
@@ -29,7 +33,9 @@ function makeSystem(overrides: Partial<System> & { id: string; name: string }): 
   };
 }
 
-function makeOwner(overrides: Partial<Owner> & { id: string; name: string }): Owner {
+function makeOwner(
+  overrides: Partial<Owner> & { id: string; name: string },
+): Owner {
   return {
     type: "team",
     created: "2026-01-01T00:00:00Z",
@@ -53,7 +59,9 @@ describe("findOrphanedSystemRefs", () => {
   });
 
   test("error when system ID does not exist", () => {
-    const services = [makeService({ id: "s1", name: "svc-a", system: "ghost" })];
+    const services = [
+      makeService({ id: "s1", name: "svc-a", system: "ghost" }),
+    ];
     const results = findOrphanedSystemRefs(services, new Set());
     expect(results).toHaveLength(1);
     expect(results[0].type).toBe("orphaned_system_ref");
@@ -135,7 +143,11 @@ describe("findDanglingDeps", () => {
 
   test("error when dependency does not exist", () => {
     const services = [
-      makeService({ id: "s1", name: "svc-a", dependsOn: [{ service: "ghost" }] }),
+      makeService({
+        id: "s1",
+        name: "svc-a",
+        dependsOn: [{ service: "ghost" }],
+      }),
     ];
     const results = findDanglingDeps(services, new Set(["s1"]));
     expect(results).toHaveLength(1);
@@ -215,7 +227,11 @@ describe("findCircularDeps", () => {
   test("handles diamond deps without false positives", () => {
     // A → B, A → C, B → D, C → D (diamond, no cycle)
     const services = [
-      makeService({ id: "s1", name: "a", dependsOn: [{ service: "s2" }, { service: "s3" }] }),
+      makeService({
+        id: "s1",
+        name: "a",
+        dependsOn: [{ service: "s2" }, { service: "s3" }],
+      }),
       makeService({ id: "s2", name: "b", dependsOn: [{ service: "s4" }] }),
       makeService({ id: "s3", name: "c", dependsOn: [{ service: "s4" }] }),
       makeService({ id: "s4", name: "d" }),
@@ -333,7 +349,10 @@ describe("runLintChecks", () => {
     const owner = makeOwner({ id: "o1", name: "platform" });
     const system = makeSystem({ id: "sys1", name: "payments", owner: "o1" });
     const service = makeService({
-      id: "s1", name: "checkout", owner: "o1", system: "sys1",
+      id: "s1",
+      name: "checkout",
+      owner: "o1",
+      system: "sys1",
       dependsOn: [],
     });
     const results = runLintChecks([service], [system], [owner]);
@@ -344,7 +363,8 @@ describe("runLintChecks", () => {
     // service with no owner (warning) + dangling dep (error) + empty system (warning)
     const system = makeSystem({ id: "sys1", name: "empty-sys" });
     const service = makeService({
-      id: "s1", name: "broken-svc",
+      id: "s1",
+      name: "broken-svc",
       dependsOn: [{ service: "ghost" }],
     });
     const results = runLintChecks([service], [system], []);
@@ -361,12 +381,27 @@ describe("runLintChecks", () => {
     const owner = makeOwner({ id: "o1", name: "team-a" });
     const services = [
       // orphaned system ref
-      makeService({ id: "s1", name: "svc-a", system: "ghost-sys", owner: "o1" }),
+      makeService({
+        id: "s1",
+        name: "svc-a",
+        system: "ghost-sys",
+        owner: "o1",
+      }),
       // orphaned owner ref
       makeService({ id: "s2", name: "svc-b", owner: "ghost-owner" }),
       // circular dep
-      makeService({ id: "s3", name: "svc-c", owner: "o1", dependsOn: [{ service: "s4" }] }),
-      makeService({ id: "s4", name: "svc-d", owner: "o1", dependsOn: [{ service: "s3" }] }),
+      makeService({
+        id: "s3",
+        name: "svc-c",
+        owner: "o1",
+        dependsOn: [{ service: "s4" }],
+      }),
+      makeService({
+        id: "s4",
+        name: "svc-d",
+        owner: "o1",
+        dependsOn: [{ service: "s3" }],
+      }),
       // duplicate name
       makeService({ id: "s5", name: "svc-c", owner: "o1" }),
     ];

@@ -54,19 +54,19 @@ export function resolveService(
   return {
     service,
     owner: service.owner
-      ? catalog.owners.find((o) => o.id === service.owner) ?? null
+      ? (catalog.owners.find((o) => o.id === service.owner) ?? null)
       : null,
     system: service.system
-      ? catalog.systems.find((s) => s.id === service.system) ?? null
+      ? (catalog.systems.find((s) => s.id === service.system) ?? null)
       : null,
     dependents: catalog.services
-      .filter((s) =>
-        (s.dependsOn ?? []).some((d) => d.service === serviceId),
-      )
+      .filter((s) => (s.dependsOn ?? []).some((d) => d.service === serviceId))
       .map((s) => {
-        const dep = s.dependsOn!.find((d) => d.service === serviceId)!;
+        const dep = s.dependsOn?.find((d) => d.service === serviceId);
+        if (!dep) return null;
         return { service: s, api: dep.api, description: dep.description };
-      }),
+      })
+      .filter((x): x is NonNullable<typeof x> => x !== null),
   };
 }
 
@@ -83,7 +83,7 @@ export function resolveSystem(
   return {
     system,
     owner: system.owner
-      ? catalog.owners.find((o) => o.id === system.owner) ?? null
+      ? (catalog.owners.find((o) => o.id === system.owner) ?? null)
       : null,
     services: catalog.services.filter((s) => s.system === systemId),
   };
@@ -129,7 +129,7 @@ export function filterServices(
     services = services.filter((s) => s.lifecycle === filters.lifecycle);
   }
   if (filters.tag) {
-    services = services.filter((s) => s.tags?.includes(filters.tag!));
+    services = services.filter((s) => s.tags?.includes(filters.tag as string));
   }
   return services;
 }

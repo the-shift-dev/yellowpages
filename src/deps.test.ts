@@ -1,5 +1,4 @@
 import { describe, expect, test } from "bun:test";
-import type { Service } from "./types.js";
 import {
   buildReverseIndex,
   findOrphans,
@@ -7,6 +6,7 @@ import {
   walkDown,
   walkUp,
 } from "./deps.js";
+import type { Service } from "./types.js";
 
 function makeService(
   overrides: Partial<Service> & { id: string; name: string },
@@ -63,7 +63,8 @@ describe("buildReverseIndex", () => {
 
   test("preserves api and description", () => {
     const reverse = buildReverseIndex(services);
-    const authDeps = reverse.get("auth")!;
+    const authDeps = reverse.get("auth");
+    if (!authDeps) throw new Error("expected auth deps");
     const fromGateway = authDeps.find((d) => d.service.id === "gw");
     expect(fromGateway?.api).toBe("OAuth");
     const fromPayments = authDeps.find((d) => d.service.id === "payments");
